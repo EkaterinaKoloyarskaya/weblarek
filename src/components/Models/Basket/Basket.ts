@@ -4,7 +4,7 @@ export class Basket {
   protected catalogBasket: IProduct[] = [];
 
   constructor() {
-    this.catalogBasket = [];
+    this.catalogBasket;
   }
 
   getCatalog(): IProduct[] {
@@ -22,19 +22,14 @@ export class Basket {
   }
 
   getAllPrice(): number {
-    return this.catalogBasket.reduce((res, item) => {
-      if (item.price !== null) {
-        return res + item.price;
-      }
-      return res;
-    }, 0);
+    return this.catalogBasket.reduce((res, item) => res + (item.price ?? 0), 0);
   }
 
-  getQuantityProduct(id: string): number {
-    return this.catalogBasket.filter((item) => item.id === id).length;
+  getAllProducts(): number {
+    return this.catalogBasket.length;
   }
 
-  checkProductBasket(id: string): boolean {
+  checkProductInBasket(id: string): boolean {
     return this.catalogBasket.some((item) => item.id === id);
   }
 
