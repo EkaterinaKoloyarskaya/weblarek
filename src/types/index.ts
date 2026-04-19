@@ -1,31 +1,22 @@
 export type ApiPostMethods = "POST" | "PUT" | "DELETE";
 
-export type TPayment = "card" | "cash" | "";
+export type TPayment = "card" | "cash";
 
-export type TBuyerErrors = {
-  payment?: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-};
+export type TBuyerErrors = Partial<Record<keyof IBuyer, string>>;
 
-export type TGet = {
+export type TProductResponse = {
   total: number;
   items: IProduct[];
 };
 
-export type TPostRequest = {
-  payment: TPayment;
-  email: string;
-  phone: string;
-  address: string;
-  total: number;
-  items: string[];
-};
-
-export type TPostResponse = {
+export type TOrderResponse = {
   id: string;
   total: number;
+};
+
+export interface TOrderRequest extends IBuyer {
+  total: number;
+  items: string[];
 };
 
 export interface IApi {
@@ -47,7 +38,7 @@ export interface IProduct {
 }
 
 export interface IBuyer {
-  payment: TPayment;
+  payment: TPayment | '';
   email: string;
   phone: string;
   address: string;
