@@ -1,7 +1,7 @@
 import { IBuyer, TPayment, TBuyerErrors } from "../../../types/index.ts";
 
 export class Buyer {
-  protected payment: TPayment;
+  protected payment: TPayment | "";
   protected address: string;
   protected phone: string;
   protected email: string;
@@ -13,11 +13,19 @@ export class Buyer {
     this.email = "";
   }
 
-  saveDataBuyer(data: IBuyer) {
-    this.payment = data.payment;
-    this.address = data.address;
-    this.phone = data.phone;
-    this.email = data.email;
+  saveDataBuyer(data: Partial<IBuyer>) {
+    if (data.payment !== undefined) {
+      this.payment = data.payment;
+    }
+    if (data.address !== undefined) {
+      this.address = data.address;
+    }
+    if (data.phone !== undefined) {
+      this.phone = data.phone;
+    }
+    if (data.email !== undefined) {
+      this.email = data.email;
+    }
   }
 
   getDataBuyer(): IBuyer {
@@ -37,24 +45,20 @@ export class Buyer {
   }
 
   validateDataBuyer(): { isValid: boolean; errors: TBuyerErrors } {
-    let errors: TBuyerErrors = {};
+    const errors: TBuyerErrors = {};
 
-    if (this.payment === "") {
+    if (this.payment === undefined) {
       errors.payment = "Cпособ оплаты не выбран";
     }
-    if (this.address === "") {
+    if (this.address === undefined) {
       errors.address = "Введите адрес доставки";
     }
-    if (this.phone === "") {
+    if (this.phone === undefined) {
       errors.phone = "Введите номер телефона";
     }
-    if (this.email === "") {
+    if (this.email === undefined) {
       errors.email = "Введите почту";
     }
-    if (Object.keys(errors).length === 0) {
-      return { isValid: true, errors: {} };
-    } else {
-      return { isValid: false, errors: errors };
-    }
+    return { isValid: Object.keys(errors).length === 0, errors };
   }
 }
