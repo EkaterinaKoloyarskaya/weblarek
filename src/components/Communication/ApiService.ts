@@ -1,4 +1,9 @@
-import { IApi, TGet, TPostRequest, TPostResponse } from "../../types";
+import {
+  IApi,
+  TProductResponse,
+  TOrderRequest,
+  TOrderResponse,
+} from "../../types";
 
 export class ApiService {
   private api: IApi;
@@ -7,11 +12,11 @@ export class ApiService {
     this.api = api;
   }
 
-  getProduct(): Promise<TGet> {
-    return this.api.get<TGet>("/product");
+  getProduct(): Promise<TProductResponse> {
+    return this.api.get<TProductResponse>("/product");
   }
 
-  postProduct(data: TPostRequest): Promise<TPostResponse> {
-    return this.api.post<TPostResponse>("/order", data);
+  postProduct(data: TOrderRequest): Promise<TOrderResponse> {
+    return this.api.post<TOrderResponse>("/order", data);
   }
 }
