@@ -152,7 +152,7 @@ Presenter - презентер содержит основную логику п
 `addProduct(product: IProduct)` — добавить товар в корзину по id.
 `removeProduct(id: string)` — удалить товар из корзины.
 `getAllPrice(): number` — получение стоимость всех товаров в корзине.
-`getQuantityProduct(id: string): number` - получение количества товаров в корзине.
+`getAllProducts(): number` - получение количества товаров в корзине.
 `checkProductBasket(id: string): boolean` - проверка наличия товара в корзине по id.
 `clear()` - очищает корзину.
 
