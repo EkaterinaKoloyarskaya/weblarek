@@ -3,10 +3,6 @@ import { IProduct } from "../../../types/index.ts";
 export class Basket {
   protected catalogBasket: IProduct[] = [];
 
-  constructor() {
-    this.catalogBasket;
-  }
-
   getCatalog(): IProduct[] {
     return this.catalogBasket;
   }
