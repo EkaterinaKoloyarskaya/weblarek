@@ -47,16 +47,16 @@ export class Buyer {
   validateDataBuyer(): { isValid: boolean; errors: TBuyerErrors } {
     const errors: TBuyerErrors = {};
 
-    if (this.payment === undefined) {
+    if (!this.payment) {
       errors.payment = "Cпособ оплаты не выбран";
     }
-    if (this.address === undefined) {
+    if (!this.address) {
       errors.address = "Введите адрес доставки";
     }
-    if (this.phone === undefined) {
+    if (!this.phone) {
       errors.phone = "Введите номер телефона";
     }
-    if (this.email === undefined) {
+    if (!this.email) {
       errors.email = "Введите почту";
     }
     return { isValid: Object.keys(errors).length === 0, errors };
