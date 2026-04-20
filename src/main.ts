@@ -83,8 +83,9 @@ buyer.saveDataBuyer({
   email: "de@frf.ru",
 });
 console.log("Получены данные покупателя:", buyer.getDataBuyer());
-buyer.clearDataBuyer();
 console.log("Валидность данных:", buyer.validateDataBuyer());
+buyer.clearDataBuyer();
+
 
 
 
