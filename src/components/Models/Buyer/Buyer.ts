@@ -1,12 +1,15 @@
 import { IBuyer, TPayment, TBuyerErrors } from "../../../types/index.ts";
+import { IEvents } from "../../base/Events.ts";
 
 export class Buyer {
   protected payment: TPayment | "";
   protected address: string;
   protected phone: string;
   protected email: string;
+  protected events: IEvents;
 
-  constructor() {
+  constructor(events: IEvents) {
+    this.events = events;
     this.payment = "";
     this.address = "";
     this.phone = "";
@@ -14,17 +17,27 @@ export class Buyer {
   }
 
   saveDataBuyer(data: Partial<IBuyer>) {
+    const changedFields = [];
+
     if (data.payment !== undefined) {
       this.payment = data.payment;
+      changedFields.push("payment");
     }
     if (data.address !== undefined) {
       this.address = data.address;
+      changedFields.push("address");
     }
     if (data.phone !== undefined) {
       this.phone = data.phone;
+      changedFields.push("phone");
     }
     if (data.email !== undefined) {
       this.email = data.email;
+      changedFields.push("email");
+    }
+
+    if (changedFields.length != 0) {
+      this.events.emit("buyer:change", { changedFields });
     }
   }
 
@@ -44,7 +57,7 @@ export class Buyer {
     this.email = "";
   }
 
-  validateDataBuyer(): { isValid: boolean; errors: TBuyerErrors } {
+  validateDataBuyer(): { errors: TBuyerErrors } {
     const errors: TBuyerErrors = {};
 
     if (!this.payment) {
@@ -59,6 +72,6 @@ export class Buyer {
     if (!this.email) {
       errors.email = "Введите почту";
     }
-    return { isValid: Object.keys(errors).length === 0, errors };
+    return { errors };
   }
 }
