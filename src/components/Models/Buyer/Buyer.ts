@@ -55,6 +55,10 @@ export class Buyer {
     this.address = "";
     this.phone = "";
     this.email = "";
+
+    this.events.emit("buyer:change", {
+      changedFields: ['payment', 'address', 'phone', 'email']
+    });
   }
 
   validateDataBuyer(): { errors: TBuyerErrors } {
