@@ -41,4 +41,8 @@ export class BasketContainer extends Component<IBasketData> {
   set price(value: number) {
     this.totalPrice.textContent = String(value);
   }
+
+  set order(value: boolean) {
+    this.orderButton.disabled = !value;
+  }
 }
