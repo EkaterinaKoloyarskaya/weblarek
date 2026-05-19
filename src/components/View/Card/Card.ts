@@ -1,5 +1,5 @@
 import { Component } from "../../base/Component";
-import { ensureElement, cloneTemplate } from "../../../utils/utils";
+import { ensureElement } from "../../../utils/utils";
 
 interface ICard {
   title: string;
@@ -10,9 +10,8 @@ export abstract class Card extends Component<ICard> {
   cardTitle: HTMLElement;
   cardPrice: HTMLElement;
 
-  constructor(template: string) {
-    const card = cloneTemplate<HTMLElement>(template);
-    super(card);
+  constructor(container: HTMLElement) {
+    super(container);
 
     this.cardTitle = ensureElement<HTMLElement>(".card__title", this.container);
     this.cardPrice = ensureElement<HTMLElement>(".card__price", this.container);

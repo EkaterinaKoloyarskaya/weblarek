@@ -1,17 +1,14 @@
 import { Component } from "../../base/Component";
-import { ensureElement, cloneTemplate } from "../../../utils/utils.ts";
+import { ensureElement } from "../../../utils/utils.ts";
 import { IEvents } from "../../base/Events.ts";
 
 export abstract class Form<T> extends Component<T> {
-  form: HTMLFormElement;
   errorElement: HTMLElement;
   continueButton: HTMLButtonElement;
 
-  constructor(protected events: IEvents, template: string) {
-    const formTemplate = cloneTemplate<HTMLFormElement>(template);
-    super(formTemplate);
+  constructor(protected events: IEvents, container: HTMLElement) {
+    super(container);
 
-    this.form = formTemplate;
     this.errorElement = ensureElement<HTMLElement>(
       ".form__errors",
       this.container
@@ -21,7 +18,7 @@ export abstract class Form<T> extends Component<T> {
       this.container
     );
 
-    this.form.addEventListener("submit", (e) => {
+    this.container.addEventListener("submit", (e) => {
       e.preventDefault();
       this.events.emit("order: submit");
     });

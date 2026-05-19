@@ -8,8 +8,8 @@ export class CardBasket extends Card {
   cardDeleteButton: HTMLButtonElement;
   protected productId: string;
 
-  constructor(protected events: IEvents, data: IProduct) {
-    super("#card-basket");
+  constructor(protected events: IEvents, container: HTMLElement, data: IProduct) {
+    super(container);
 
     this.productId = data.id;
 

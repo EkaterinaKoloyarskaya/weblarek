@@ -1,5 +1,5 @@
 import { Component } from "../../base/Component";
-import { ensureElement, cloneTemplate } from "../../../utils/utils";
+import { ensureElement } from "../../../utils/utils";
 import { IEvents } from "../../base/Events";
 import { IProduct } from "../../../types";
 
@@ -13,9 +13,8 @@ export class BasketContainer extends Component<IBasketData> {
   orderButton: HTMLButtonElement;
   totalPrice: HTMLElement;
 
-  constructor(protected events: IEvents, template: string) {
-    const basket = cloneTemplate<HTMLElement>(template);
-    super(basket);
+  constructor(protected events: IEvents, container: HTMLElement) {
+    super(container);
 
     this.listItems = ensureElement<HTMLElement>(
       ".basket__list",

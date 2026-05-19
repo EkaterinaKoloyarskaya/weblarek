@@ -13,20 +13,20 @@ export class OrderForm extends Form<IOrderForm> {
   cashButton: HTMLButtonElement;
   addressInput: HTMLInputElement;
 
-  constructor(events: IEvents) {
-    super(events, "#order");
+  constructor(events: IEvents, container: HTMLElement) {
+    super(events, container);
 
     this.cardButton = ensureElement<HTMLButtonElement>(
       'button[name="card"]',
-      this.form
+      this.container
     );
     this.cashButton = ensureElement<HTMLButtonElement>(
       'button[name="cash"]',
-      this.form
+      this.container
     );
     this.addressInput = ensureElement<HTMLInputElement>(
       'input[name="address"]',
-      this.form
+      this.container
     );
 
     this.cardButton.addEventListener("click", () => {
@@ -43,7 +43,7 @@ export class OrderForm extends Form<IOrderForm> {
       });
     });
 
-    this.form.addEventListener("submit", () => {
+    this.container.addEventListener("submit", () => {
       this.events.emit("orderForm: submit");
     });
   }

@@ -10,8 +10,8 @@ export class CardCatalog extends Card {
   imageElement: HTMLImageElement;
   protected productId: string;
 
-  constructor(protected events: IEvents, data: IProduct) {
-    super("#card-catalog");
+  constructor(protected events: IEvents, container: HTMLElement, data: IProduct) {
+    super(container);
 
     this.productId = data.id;
     this.title = data.title;

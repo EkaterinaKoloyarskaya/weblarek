@@ -1,5 +1,5 @@
 import { Component } from "../../base/Component";
-import { ensureElement, cloneTemplate } from "../../../utils/utils";
+import { ensureElement } from "../../../utils/utils";
 import { IEvents } from "../../base/Events";
 
 interface IOrderSuccess {
@@ -10,9 +10,8 @@ export class OrderSuccess extends Component<IOrderSuccess> {
   buttonSuccessClose: HTMLButtonElement;
   orderSuccessDescription: HTMLElement;
 
-  constructor(protected events: IEvents, template: string) {
-    const success = cloneTemplate<HTMLElement>(template);
-    super(success);
+  constructor(protected events: IEvents, container: HTMLElement) {
+    super(container);
 
     this.orderSuccessDescription = ensureElement<HTMLElement>(
       ".order-success__description",
