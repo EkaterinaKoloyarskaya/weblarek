@@ -15,107 +15,156 @@ import { CardCatalog } from "./components/View/Card/CardCatalog/CardCatalog.ts";
 import { OrderSuccess } from "./components/View/OrderSuccess/OrderSuccess.ts";
 import { CardBasket } from "./components/View/Card/CardBasket/CardBasket.ts";
 import { CardPreview } from "./components/View/Card/CardPreview/CardPreview.ts";
+import { cloneTemplate } from "./utils/utils.ts";
+import { CatalogProduct } from "./components/Models/CatalogProduct/CatalogProduct.ts";
 
 const events = new EventEmitter();
 const api = new Api(API_URL);
 const serviceApi = new ApiService(api);
-const data = await serviceApi.getProduct();
+const productModel = new CatalogProduct(events);
 
-const basketContainer = new BasketContainer(events, "#basket");
+async function init() {
+  try {
+    const data = await serviceApi.getProduct();
+    productModel.saveCatalog(data.items);
+  } catch (err) {
+    console.log(err);
+  }
+}
+init();
 
-const header = new Header(
-  events,
-  document.querySelector(".header") as HTMLElement
-);
+const basketContainer = new BasketContainer(events, cloneTemplate<HTMLTemplateElement>("#basket"));
+
+const header = new Header(events, document.querySelector(".header") as HTMLElement);
 const gallery = new Gallery(document.querySelector(".gallery") as HTMLElement);
-const modal = new Modal(
-  events,
-  document.querySelector(".modal") as HTMLElement
-);
-
+const modal = new Modal(events, document.querySelector(".modal") as HTMLElement);
 const basketData = new Basket(events);
 const buyer = new Buyer(events);
+const cardPreview = new CardPreview(events, cloneTemplate<HTMLTemplateElement>("#card-preview"));
+const orderForm = new OrderForm(events, cloneTemplate<HTMLTemplateElement>("#order"));
+const orderSuccess = new OrderSuccess(events, cloneTemplate<HTMLElement>("#success"));
 
-const cards = data.items.map((item) => {
-  const card = new CardCatalog(events, item);
-  return card.render();
+events.on("catalog: updated", () => {
+  const data = productModel.getCatalog();
+  const cards = data.map((item) => {
+    const card = new CardCatalog(
+      cloneTemplate<HTMLTemplateElement>("#card-catalog"),
+      {
+        onClick: () => {
+          events.emit("card: previewCard", { id: item.id });
+        },
+      }
+    );
+
+    return card.render({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      image: item.image,
+      category: item.category,
+    });
+  });
+  gallery.catalog = cards;
 });
-gallery.catalog = cards;
 
 events.on("basket: open", () => {
-  const items = basketData.getCatalog();
-  const cards = items.map((item, index) => {
-    const card = new CardBasket(events, item);
-    card.index = index + 1;
-    return card.render();
-  });
-  basketContainer.items = cards;
+  basketContainer.order = basketData.getAllProducts() > 0;
   modal.content = basketContainer.render();
   modal.open();
 });
 
-let currentPreviewId: string | null = null;
-
 events.on("card: previewCard", (itemData: { id: string }) => {
-  const card = data.items.find((item) => item.id === itemData.id);
-  if (card) {
-    currentPreviewId = card.id;
-    const cardPreview = new CardPreview(events, card);
-    const isInBasket = basketData.checkProductInBasket(card.id);
-    cardPreview.setButtonState(isInBasket);
-    modal.content = cardPreview.render();
-    modal.open();
-  }
+  const cards = productModel.getCatalog();
+  const card = cards.find((item) => item.id === itemData.id);
+  console.log(card);
+  if (!card) return;
+
+  productModel.saveSelectedProduct(card);
+  modal.content = cardPreview.render({
+    id: card.id,
+    title: card.title,
+    price: card.price,
+    image: card.image,
+    description: card.description,
+    category: card.category,
+  });
+  cardPreview.buttonState = basketData.checkProductInBasket(card.id);
+  modal.open();
 });
 
 events.on("basket: deleteCard", (itemData: { id: string }) => {
   basketData.removeProduct(itemData.id);
-  const items = basketData.getCatalog();
-  const cards = items.map((item, index) => {
-    const card = new CardBasket(events, item);
-    card.index = index + 1;
-    return card.render();
-  });
-  basketContainer.price = basketData.getAllPrice();
-  basketContainer.items = cards;
 });
 
 events.on("modal: close", () => {
   modal.close();
 });
 
-events.on("card: addToBasket", (itemData: { id: string }) => {
-  const card = data.items.find((item) => item.id === itemData.id);
-  if (!card) return;
+events.on("card: addToBasket", () => {
+  const product = productModel.getSelectedProduct();
+  console.log(product);
 
-  if (basketData.checkProductInBasket(card.id)) {
-    basketData.removeProduct(card.id);
+  if (!product) return;
+
+  if (basketData.checkProductInBasket(product.id)) {
+    basketData.removeProduct(product.id);
+    modal.close();
   } else {
-    basketData.addProduct(card);
+    basketData.addProduct(product);
+    modal.close();
   }
 });
 
 events.on("basket: changed", () => {
+  const items = basketData.getCatalog();
+  const cards = items.map((item, index) => {
+    const card = new CardBasket(
+      cloneTemplate<HTMLTemplateElement>("#card-basket"),
+      {
+        onDelete: () => {
+          events.emit("basket: deleteCard", { id: item.id });
+        },
+      }
+    );
+
+    return card.render({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      index: index + 1,
+    });
+  });
+
+  basketContainer.items = cards;
+
   basketContainer.price = basketData.getAllPrice();
   header.counter = basketData.getAllProducts();
-
-  if (currentPreviewId) {
-    const card = data.items.find((item) => item.id === currentPreviewId);
-    if (!card) return;
-    const cardPreview = new CardPreview(events, card);
-    const isInBasket = basketData.checkProductInBasket(card.id);
-    cardPreview.setButtonState(isInBasket);
-    modal.content = cardPreview.render();
-  }
+  basketContainer.order = basketData.getAllProducts() > 0;
 });
 
-const orderForm = new OrderForm(events);
 events.on("basket: makeAnOrder", () => {
   modal.content = orderForm.render();
 });
 
 events.on("buyer:change", (data: { changedFields: string[] }) => {
   const state = buyer.getDataBuyer();
+
+  const isEmpty = !state.payment && !state.address && !state.email && !state.phone;
+
+  if (isEmpty) {
+    orderForm.payment = "";
+    orderForm.address = "";
+    contactsForm.email = "";
+    contactsForm.phone = "";
+
+    orderForm.errors = [];
+    contactsForm.errors = [];
+
+    orderForm.valid = false;
+    contactsForm.valid = false;
+    return;
+  }
+
   const { errors } = buyer.validateDataBuyer();
   if (data.changedFields.includes("payment")) {
     orderForm.payment = state.payment;
@@ -154,7 +203,10 @@ events.on("input: address", ({ value }: { value: string }) => {
   buyer.saveDataBuyer({ address: value });
 });
 
-const contactsForm = new ContactsForm(events);
+const contactsForm = new ContactsForm(
+  events,
+  cloneTemplate<HTMLTemplateElement>("#contacts")
+);
 events.on("orderForm: submit", () => {
   modal.content = contactsForm.render();
 });
@@ -167,8 +219,6 @@ events.on("input: phone", ({ value }: { value: string }) => {
   buyer.saveDataBuyer({ phone: value });
 });
 
-const orderSuccess = new OrderSuccess(events, "#success");
-
 events.on("contactsForm: submit", async () => {
   const orderData = {
     ...buyer.getDataBuyer(),
@@ -177,13 +227,13 @@ events.on("contactsForm: submit", async () => {
   };
 
   try {
-    await serviceApi.postProduct(orderData);
+    const response = await serviceApi.postProduct(orderData);
     basketData.clear();
     buyer.clearDataBuyer();
-    orderSuccess.amount = orderData.total;
+    orderSuccess.amount = response.total;
     modal.content = orderSuccess.render();
   } catch (err) {
-    return err;
+    console.log(err);
   }
 });
 
