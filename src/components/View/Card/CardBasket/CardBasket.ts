@@ -3,18 +3,19 @@ import { ensureElement } from "../../../../utils/utils";
 import { IEvents } from "../../../base/Events";
 import { IProduct } from "../../../../types/index";
 
-export class CardBasket extends Card {
+type TCardBasket = {
+  index: number;
+}
+
+export class CardBasket extends Card<TCardBasket> {
   cardIndex: HTMLElement;
   cardDeleteButton: HTMLButtonElement;
-  protected productId: string;
+  
 
-  constructor(protected events: IEvents, container: HTMLElement, data: IProduct) {
+  constructor(container: HTMLElement, handlers: {onDelete: () => void}) {
     super(container);
 
-    this.productId = data.id;
-
-    this.title = data.title;
-    this.price = data.price;
+    
     this.cardIndex = ensureElement<HTMLElement>(
       ".basket__item-index",
       this.container
@@ -24,9 +25,7 @@ export class CardBasket extends Card {
       this.container
     );
 
-    this.cardDeleteButton.addEventListener("click", () => {
-      this.events.emit("basket: deleteCard", { id: this.productId });
-    });
+    this.cardDeleteButton.addEventListener("click", handlers.onDelete);
   }
 
   set index(value: number) {

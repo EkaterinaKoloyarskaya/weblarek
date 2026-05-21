@@ -1,20 +1,26 @@
 import { Component } from "../../base/Component";
 import { ensureElement } from "../../../utils/utils";
 
-interface ICard {
+type TCard = {
+  id: string;
   title: string;
   price: number | null;
-}
+};
 
-export abstract class Card extends Component<ICard> {
+export abstract class Card<T> extends Component<T & TCard> {
   cardTitle: HTMLElement;
   cardPrice: HTMLElement;
+  protected cardId!: string;
 
   constructor(container: HTMLElement) {
     super(container);
 
     this.cardTitle = ensureElement<HTMLElement>(".card__title", this.container);
     this.cardPrice = ensureElement<HTMLElement>(".card__price", this.container);
+  }
+
+  set id(value: string) {
+    this.cardId = value;
   }
 
   set title(value: string) {

@@ -2,14 +2,14 @@ import { Form } from "../Form.ts";
 import { ensureElement } from "../../../../utils/utils.ts";
 import { IEvents } from "../../../base/Events.ts";
 
-interface IContactsForm {
+type TContactsForm = {
   email: string;
-  number: string;
-}
+  phone: string;
+};
 
-export class ContactsForm extends Form<IContactsForm> {
+export class ContactsForm extends Form<TContactsForm> {
   emailInput: HTMLInputElement;
-  numberInput: HTMLInputElement;
+  phoneInput: HTMLInputElement;
 
   constructor(events: IEvents, container: HTMLElement) {
     super(events, container);
@@ -18,7 +18,7 @@ export class ContactsForm extends Form<IContactsForm> {
       'input[name="email"]',
       this.container
     );
-    this.numberInput = ensureElement<HTMLInputElement>(
+    this.phoneInput = ensureElement<HTMLInputElement>(
       'input[name="phone"]',
       this.container
     );
@@ -29,9 +29,9 @@ export class ContactsForm extends Form<IContactsForm> {
       });
     });
 
-    this.numberInput.addEventListener("input", () => {
+    this.phoneInput.addEventListener("input", () => {
       this.events.emit("input: phone", {
-        value: this.numberInput.value,
+        value: this.phoneInput.value,
       });
     });
 
@@ -45,6 +45,6 @@ export class ContactsForm extends Form<IContactsForm> {
   }
 
   set phone(value: string) {
-    this.numberInput.value = value;
+    this.phoneInput.value = value;
   }
 }

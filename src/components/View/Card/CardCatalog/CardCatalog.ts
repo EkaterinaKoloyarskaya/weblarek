@@ -1,21 +1,19 @@
 import { Card } from "../Card";
 import { ensureElement } from "../../../../utils/utils";
-import { IEvents } from "../../../base/Events";
-import { IProduct } from "../../../../types/index";
 import { CDN_URL, categoryMap } from "../../../../utils/constants";
 
-export class CardCatalog extends Card {
+type TCardCategory = {
+  category: string;
+  image: string;
+};
+
+export class CardCatalog extends Card<TCardCategory> {
   cardCatalogButton: HTMLButtonElement;
   cardCategory: HTMLElement;
   imageElement: HTMLImageElement;
-  protected productId: string;
 
-  constructor(protected events: IEvents, container: HTMLElement, data: IProduct) {
+  constructor(container: HTMLElement, handlers: { onClick: () => void }) {
     super(container);
-
-    this.productId = data.id;
-    this.title = data.title;
-    this.price = data.price;
 
     this.imageElement = ensureElement<HTMLImageElement>(
       ".card__image",
@@ -26,12 +24,8 @@ export class CardCatalog extends Card {
       ".card__category",
       this.container
     );
-    this.setImage(this.imageElement, CDN_URL + data.image, data.title);
-    this.category = data.category;
 
-    this.cardCatalogButton.addEventListener("click", () => {
-      this.events.emit("card: previewCard", { id: this.productId });
-    });
+    this.cardCatalogButton.addEventListener("click", handlers.onClick);
   }
 
   set category(value: string) {
@@ -40,5 +34,9 @@ export class CardCatalog extends Card {
       this.cardCategory.classList.remove(className);
     });
     this.cardCategory.classList.add(categoryMap[value]);
+  }
+
+  set image(value: string) {
+    this.setImage(this.imageElement, CDN_URL + value, this.title);
   }
 }

@@ -2,7 +2,12 @@ import { Component } from "../../base/Component";
 import { ensureElement } from "../../../utils/utils.ts";
 import { IEvents } from "../../base/Events.ts";
 
-export abstract class Form<T> extends Component<T> {
+type TForm = {
+  valid: boolean;
+  errors: [];
+};
+
+export abstract class Form<T> extends Component<T & TForm> {
   errorElement: HTMLElement;
   continueButton: HTMLButtonElement;
 

@@ -3,12 +3,12 @@ import { ensureElement } from "../../../../utils/utils.ts";
 import { IEvents } from "../../../base/Events.ts";
 import { TPayment } from "../../../../types/index.ts";
 
-interface IOrderForm {
+type TOrderForm = {
   payment: TPayment | "";
   address: string;
-}
+};
 
-export class OrderForm extends Form<IOrderForm> {
+export class OrderForm extends Form<TOrderForm> {
   cardButton: HTMLButtonElement;
   cashButton: HTMLButtonElement;
   addressInput: HTMLInputElement;
