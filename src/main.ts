@@ -17,6 +17,7 @@ import { CardBasket } from "./components/View/Card/CardBasket/CardBasket.ts";
 import { CardPreview } from "./components/View/Card/CardPreview/CardPreview.ts";
 import { cloneTemplate } from "./utils/utils.ts";
 import { CatalogProduct } from "./components/Models/CatalogProduct/CatalogProduct.ts";
+import { IProduct } from "./types/index.ts";
 
 const events = new EventEmitter();
 const api = new Api(API_URL);
@@ -87,6 +88,9 @@ events.on("card: previewCard", (itemData: { id: string }) => {
   if (!card) return;
 
   productModel.saveSelectedProduct(card);
+})
+
+events.on('product: selected', (card: IProduct) => {
   modal.content = cardPreview.render({
     title: card.title,
     price: card.price,
