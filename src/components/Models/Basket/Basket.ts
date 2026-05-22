@@ -32,7 +32,7 @@ export class Basket {
     return this.catalogBasket.reduce((res, item) => res + (item.price ?? 0), 0);
   }
 
-  getAllProducts(): number {
+  getCount(): number {
     return this.catalogBasket.length;
   }
 
