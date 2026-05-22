@@ -27,7 +27,7 @@ export class Modal extends Component<IModal> {
     });
 
     this.closeButton.addEventListener("click", () => {
-      
+      this.close();
     });
 
     this.contentElement.addEventListener("click", (e) => {
