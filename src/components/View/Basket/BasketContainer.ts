@@ -29,9 +29,12 @@ export class BasketContainer extends Component<IBasketData> {
       this.container
     );
 
+    this.orderButton.disabled = true;
+
     this.orderButton.addEventListener("click", () => {
       this.events.emit("basket: makeAnOrder");
     });
+
   }
 
   set items(items: HTMLElement[]) {

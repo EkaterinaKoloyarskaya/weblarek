@@ -57,7 +57,6 @@ events.on("catalog: updated", () => {
     );
 
     return card.render({
-      id: item.id,
       title: item.title,
       price: item.price,
       image: item.image,
@@ -67,8 +66,17 @@ events.on("catalog: updated", () => {
   gallery.catalog = cards;
 });
 
+function updateCardPreviewButton(price: number | null, inBasket: boolean) {
+  const disabled = price === null;
+
+  cardPreview.disabled = disabled;
+
+  cardPreview.buttonText = disabled
+    ? "Недоступно"
+    : (inBasket ? "Удалить из корзины" : "В корзину");
+}
+
 events.on("basket: open", () => {
-  basketContainer.order = basketData.getAllProducts() > 0;
   modal.content = basketContainer.render();
   modal.open();
 });
@@ -76,19 +84,20 @@ events.on("basket: open", () => {
 events.on("card: previewCard", (itemData: { id: string }) => {
   const cards = productModel.getCatalog();
   const card = cards.find((item) => item.id === itemData.id);
-  console.log(card);
   if (!card) return;
 
   productModel.saveSelectedProduct(card);
   modal.content = cardPreview.render({
-    id: card.id,
     title: card.title,
     price: card.price,
     image: card.image,
     description: card.description,
     category: card.category,
   });
-  cardPreview.buttonState = basketData.checkProductInBasket(card.id);
+  updateCardPreviewButton(
+    card.price,
+    basketData.checkProductInBasket(card.id)
+  );
   modal.open();
 });
 
@@ -96,13 +105,8 @@ events.on("basket: deleteCard", (itemData: { id: string }) => {
   basketData.removeProduct(itemData.id);
 });
 
-events.on("modal: close", () => {
-  modal.close();
-});
-
 events.on("card: addToBasket", () => {
   const product = productModel.getSelectedProduct();
-  console.log(product);
 
   if (!product) return;
 
@@ -128,7 +132,6 @@ events.on("basket: changed", () => {
     );
 
     return card.render({
-      id: item.id,
       title: item.title,
       price: item.price,
       index: index + 1,
@@ -138,12 +141,20 @@ events.on("basket: changed", () => {
   basketContainer.items = cards;
 
   basketContainer.price = basketData.getAllPrice();
-  header.counter = basketData.getAllProducts();
-  basketContainer.order = basketData.getAllProducts() > 0;
+  header.counter = basketData.getCount();
+  basketContainer.order = basketData.getCount() > 0;
 });
 
 events.on("basket: makeAnOrder", () => {
   modal.content = orderForm.render();
+
+  const selected = productModel.getSelectedProduct();
+  if (selected) {
+    updateCardPreviewButton(
+      selected.price,
+      basketData.checkProductInBasket(selected.id)
+    );
+  }
 });
 
 events.on("buyer:change", (data: { changedFields: string[] }) => {

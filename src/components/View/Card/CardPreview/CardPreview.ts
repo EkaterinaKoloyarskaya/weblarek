@@ -8,7 +8,8 @@ type TCardPreview = {
   price: number | null;
   category: string;
   image: string;
-  buttonState: boolean;
+  buttonText: string;
+  disabled: boolean;
 };
 
 export class CardPreview extends Card<TCardPreview> {
@@ -53,21 +54,17 @@ export class CardPreview extends Card<TCardPreview> {
 
   set price(value: number | null) {
     super.price = value;
-    const hasPrice = value !== null;
-    this.addToBasketButton.disabled = !hasPrice;
+    
   }
+set disabled (value: boolean) {
+    this.addToBasketButton.disabled = value;
+}
+
   set image(value: string) {
     this.setImage(this.imageElement, CDN_URL + value, this.title);
   }
 
-  set buttonState(inBasket: boolean) {
-    if (this.addToBasketButton.disabled) {
-      this.addToBasketButton.textContent = "Недоступно";
-      return;
-    }
-
-    this.addToBasketButton.textContent = inBasket
-      ? "Удалить из корзины"
-      : "В корзину";
-  }
+  set buttonText(value: string) {
+      this.addToBasketButton.textContent = value;
+}
 }
